@@ -6,14 +6,20 @@ package cloud.contact.manager;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Color;
+import java.util.Set;
 /**
  *
  * @author djack
  */
 public class JManageForm extends javax.swing.JFrame {
+    
 
     DefaultTableModel model;
-    
+    String apellido=null;
+    String mail=null;
+    String nombre=null;
+    String telefono=null;
     /**
      * Creates new form JManageForm
      */
@@ -23,7 +29,7 @@ public class JManageForm extends javax.swing.JFrame {
         String[] titles={"Nombre","Apellido","Email","Teléfono"};
         model=new DefaultTableModel(null,titles);
         jTable1.setModel(model);
-        showData();
+        showData(); 
     }
     
     public void showData()
@@ -47,20 +53,33 @@ public class JManageForm extends javax.swing.JFrame {
 
     public void Buscar()
     {
-         try{
-            SQLManager con=new SQLManager();
-            PreparedStatement table1Fill=con.conexion().prepareStatement("Select * from contact_list where alumno='"+JLoginFrame.alumno+"' and nombre='"+jTextField1.getText()+"'");
-            ResultSet result= table1Fill.executeQuery();
-            while(result.next())
-            {
-                Object[] tbRow= {result.getString("nombre"),result.getString("apellido"),result.getString("email"),result.getString("telefono")};
-                model.addRow(tbRow);
+        if (jTextField1.getText() != "") {
+            try {
+                SQLManager con = new SQLManager();
+                PreparedStatement table1Fill = con.conexion().prepareStatement("Select * from contact_list where alumno='" + JLoginFrame.alumno + "' and nombre='" + jTextField1.getText() + "'");
+                ResultSet result = table1Fill.executeQuery();
+                clearTable();
+                while (result.next()) {
+                    Object[] tbRow = {result.getString("nombre"), result.getString("apellido"), result.getString("email"), result.getString("telefono")};
+                    model.addRow(tbRow);
+                    jTable1.setModel(model);
+                }
+               
+        jTextField2.setText(jTable1.getModel().getValueAt(0,0).toString());
+        jTextField3.setText(jTable1.getModel().getValueAt(0,1).toString());
+        jTextField4.setText(jTable1.getModel().getValueAt(0,2).toString());
+        jTextField5.setText(jTable1.getModel().getValueAt(0,3).toString());
+        jButton3.setEnabled(true);
+        jButton4.setEnabled(true);
+        //jButton5.setEnabled(true);
+        jButton3.setEnabled(true);
+        jButton2.setEnabled(false);
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error " + e.getMessage());
             }
+        } else if(jTextField1.getText()==" ") {
+            showData();
         }
-        catch(SQLException e)
-        {
-            JOptionPane.showMessageDialog(this, "Error "+ e.getMessage());
-        }        
     }
     
     /**
@@ -87,8 +106,12 @@ public class JManageForm extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Contact Manager");
+        setBackground(javax.swing.UIManager.getDefaults().getColor("Actions.Blue"));
+        setForeground(new java.awt.Color(129, 192, 233));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -112,6 +135,9 @@ public class JManageForm extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("BUSCAR");
+        jButton1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jButton1.setContentAreaFilled(false);
+        jButton1.setDoubleBuffered(true);
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton1MouseClicked(evt);
@@ -127,6 +153,9 @@ public class JManageForm extends javax.swing.JFrame {
         jLabel4.setText("Telefono");
 
         jButton2.setText("Añadir");
+        jButton2.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jButton2.setContentAreaFilled(false);
+        jButton2.setDoubleBuffered(true);
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton2MouseClicked(evt);
@@ -135,8 +164,37 @@ public class JManageForm extends javax.swing.JFrame {
 
         jButton3.setText("Editar");
         jButton3.setToolTipText("");
+        jButton3.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jButton3.setContentAreaFilled(false);
+        jButton3.setDoubleBuffered(true);
+        jButton3.setEnabled(false);
+        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton3MouseClicked(evt);
+            }
+        });
 
         jButton4.setText("Borrar");
+        jButton4.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jButton4.setContentAreaFilled(false);
+        jButton4.setDoubleBuffered(true);
+        jButton4.setEnabled(false);
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton4MouseClicked(evt);
+            }
+        });
+
+        jButton5.setText("Actualizar");
+        jButton5.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jButton5.setContentAreaFilled(false);
+        jButton5.setDoubleBuffered(true);
+        jButton5.setEnabled(false);
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton5MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -170,12 +228,13 @@ public class JManageForm extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE)
                                     .addComponent(jTextField4))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 129, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3)
-                            .addComponent(jButton4))
-                        .addGap(71, 71, 71))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 150, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(68, 68, 68))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -204,7 +263,8 @@ public class JManageForm extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton5))
                 .addContainerGap(36, Short.MAX_VALUE))
         );
 
@@ -213,6 +273,8 @@ public class JManageForm extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
+        Color bgColor=new Color(129,192,233);
+        this.setBackground(bgColor); 
     }//GEN-LAST:event_formWindowOpened
 
     
@@ -225,28 +287,101 @@ public class JManageForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         
         JTable receptor= (JTable)evt.getSource();
-        jTextField2.setText(receptor.getModel().getValueAt(receptor.getSelectedColumn()-2,0).toString());
-        jTextField3.setText(receptor.getModel().getValueAt(receptor.getSelectedColumn()-2,1).toString());
-        jTextField4.setText(receptor.getModel().getValueAt(receptor.getSelectedColumn()-2,2).toString());
-        jTextField5.setText(receptor.getModel().getValueAt(receptor.getSelectedColumn()-2,3).toString());
-        
+        jTextField2.setText(receptor.getModel().getValueAt(receptor.getSelectedRow(),0).toString());
+        jTextField3.setText(receptor.getModel().getValueAt(receptor.getSelectedRow(),1).toString());
+        jTextField4.setText(receptor.getModel().getValueAt(receptor.getSelectedRow(),2).toString());
+        jTextField5.setText(receptor.getModel().getValueAt(receptor.getSelectedRow(),3).toString());
+        jButton3.setEnabled(true);
+        jButton4.setEnabled(true);
+        //jButton5.setEnabled(true);
+        jButton3.setEnabled(true);
+        jButton2.setEnabled(false);                                
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         // TODO add your handling code here:
         try{
-        SQLManager manager=new SQLManager();
-        PreparedStatement insertar= manager.conexion().prepareStatement("Insert into contact_list values('"+JLoginFrame.alumno+","+jTextField3.getText()+"','"+jTextField4.getText()+"','"+jTextField2.getText()+"','"+jTextField5.getText()+"')");            
-        insertar.executeUpdate();
-        showData();
+            nombre=jTextField2.getText();
+            apellido=jTextField3.getText();
+            mail=jTextField4.getText();
+            telefono=jTextField5.getText();
+            SQLManager manager=new SQLManager();
+            PreparedStatement insertar= manager.conexion().prepareStatement("Insert into contact_list values('"+JLoginFrame.alumno+"','"+apellido+"','"+mail+"','"+nombre+"','"+telefono+"')");            
+            insertar.execute();
+            clearTable();
+            showData();
         }
         catch(SQLException e)
         {
             JOptionPane.showMessageDialog(rootPane,"Error debido a "+e.getMessage());
         }
-
     }//GEN-LAST:event_jButton2MouseClicked
 
+    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
+        // TODO add your handling code here:
+        jButton5.setEnabled(true);
+        jTextField2.setEditable(false);
+        
+    }//GEN-LAST:event_jButton3MouseClicked
+
+    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
+        // TODO add your handling code here:
+        try {
+            nombre = jTextField2.getText();
+            apellido = jTextField3.getText();
+            mail = jTextField4.getText();
+            telefono = jTextField5.getText();
+            SQLManager manager = new SQLManager();
+            PreparedStatement insertar = manager.conexion().prepareStatement("update contact_list set alumno='" + JLoginFrame.alumno + "', apellido='" + apellido + "', email='" + mail + "', nombre='" + nombre + "', telefono='" + telefono + "' where nombre='" + jTextField2.getText() + "'");
+            insertar.execute();
+            clearTable();
+            showData();
+            limpiarCampos();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(rootPane, "Error debido a " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton5MouseClicked
+
+    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
+        // TODO add your handling code here:
+      try{
+            SQLManager con=new SQLManager();
+            PreparedStatement rowDrop=con.conexion().prepareStatement("Delete from contact_list where alumno="+JLoginFrame.alumno+" nombre='"+jTextField2.getText()+"'");
+            rowDrop.execute();
+            clearTable();
+            showData();
+            limpiarCampos();
+        }
+        catch(SQLException e)
+        {
+            JOptionPane.showMessageDialog(this, "Error "+ e.getMessage());
+        }        
+        
+    }//GEN-LAST:event_jButton4MouseClicked
+
+    public void limpiarCampos()
+    {
+        jTextField2.setEditable(true);
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextField4.setText("");
+        jTextField5.setText("");
+
+        jButton2.setEnabled(true);
+        jButton3.setEnabled(false);
+        jButton4.setEnabled(false);
+        jButton5.setEnabled(false);
+    }
+    
+    public void clearTable()
+    {
+        for(int i=0;i<jTable1.getRowCount();i++)
+        {
+            model.removeRow(i);
+            i-=1;
+        }
+        jTable1.setModel(model);
+    }
     /**
      * @param args the command line arguments
      */
@@ -287,6 +422,7 @@ public class JManageForm extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
